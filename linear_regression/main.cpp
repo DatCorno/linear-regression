@@ -18,18 +18,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 	
-	if(argc > 2)
-		learning_rate = atof(argv[2]);
-	
-	if(argc > 3)
-		delimiter = std::string(argv[3]);
-	
 	std::ifstream istrm(argv[1]);
-	
-	std::vector<data_point<double>> data_points;
-	std::string line;
-	size_t pos = 0;
-	std::string token;
 	
 	if(!istrm.is_open())
 	{
@@ -37,7 +26,15 @@ int main(int argc, char** argv)
 		return -1;
 	}
 	
-	getline(istrm, line);	//Skip csv header
+	if(argc > 2)
+		learning_rate = atof(argv[2]);
+	
+	if(argc > 3)
+		delimiter = std::string(argv[3]);
+	
+	std::vector<data_point<double>> data_points;
+	std::string line, token;
+	size_t pos = 0;
 
 	//Read file
 	while(getline(istrm, line))

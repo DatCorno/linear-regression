@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	double slope = 1.0;
 	double y_intercept = 0.0;
 	
-	char delimiter = ',';
+	std::string delimiter(",");
 	
 	if(argc > 1)
 		number_of_value = atof(argv[1]);
@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	if(argc > 3)
 		y_intercept = atof(argv[3]);
 	if(argc > 4)
-		delimiter = argv[4][0];
+		delimiter = std::string(argv[4]);
 	
 	std::string filename = "linear_model_data.csv";
 	

@@ -13,6 +13,7 @@
 #include "data_point.hpp"
 
 namespace corneau {
+	
 	template<typename T, 
 				template<typename, typename = std::allocator<corneau::data_point<T>>> typename Container,
 				typename LinearFunction>

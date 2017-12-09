@@ -2,6 +2,7 @@
 #define DATA_POINT_HPP
 
 namespace corneau {
+	
 	template<typename T>
 	struct data_point {
 		T x;
