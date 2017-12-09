@@ -1,2 +1,2 @@
-# one-variable-linear-regression
+# linear-regression
 An implementation of linear regression for a linear model
