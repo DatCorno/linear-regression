@@ -11,13 +11,11 @@
 int main(int argc, char** argv)
 {
 	auto start = std::chrono::high_resolution_clock::now();
-	
+
 	std::size_t number_of_value = 100;
 	double slope = 1.0;
 	double y_intercept = 0.0;
 	std::size_t precision = 8;
-	
-	char delimiter = ',';
 	
 	if(argc > 1)
 		number_of_value = atof(argv[1]);
@@ -50,14 +48,17 @@ int main(int argc, char** argv)
 		ostrm << std::fixed << std::setprecision(precision);
 		
 		//Buffer storing float representation and one '\0' character
-		char* buffer = new char[(number_of_value * sizeof_line) + 1];
+		char* buffer = new char[(number_of_value * sizeof_line)];
 		
 		//Initialize everything to zero
-		for(std::size_t i = 0; i < number_of_value * sizeof_line; ++i)
-			buffer[i] = '0';
-		
-		//Put a '\0' at the last location
-		buffer[number_of_value * sizeof_line + 1] = '\0';
+		for(std::size_t i = 0; i < number_of_value; ++i)
+		{
+			for(std::size_t j = 0; j < sizeof_line; ++j)
+				buffer[i * sizeof_line + j] = '0';
+			
+			buffer[i * sizeof_line + float_rep_size] = ',';
+			buffer[i * sizeof_line + float_rep_size * 2 + sizeof(char)] = '\n';	
+		}
 		
 		//Loop over how much values with want
 		for(std::size_t i = 0; i < number_of_value; ++i)
@@ -75,13 +76,8 @@ int main(int argc, char** argv)
 			buffer[line_offset + res] = '0';
 			
 			//Since we written float_rep_size character, we put the delimiter at float_rep_size index
-			buffer[line_offset + float_rep_size] = ',';
-			
 			res = snprintf((buffer + line_offset + float_rep_size + sizeof(char)), float_rep_size, "%f", y);
-			
 			buffer[line_offset + float_rep_size + sizeof(char) + res] = '0';
-			
-			buffer[line_offset + float_rep_size * 2 + sizeof(char)] = '\n';	
 		}
 		
 		ostrm.write(buffer, number_of_value * sizeof_line);

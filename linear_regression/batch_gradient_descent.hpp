@@ -14,12 +14,13 @@
 
 namespace corneau {
 	
-	template<typename T, 
+	template<typename PrecisionType,
+				typename T, 
 				template<typename, typename = std::allocator<corneau::data_point<T>>> typename Container,
 				typename LinearFunction>
 	T calculate_theta_zero(const Container<corneau::data_point<T>>& values, LinearFunction hypothesis)
 	{
-		double constant_term = 1 / (double)values.size();
+		PrecisionType constant_term = 1 / (PrecisionType)values.size();
 			
 		T sum = 0;
 		
@@ -29,12 +30,13 @@ namespace corneau {
 		return constant_term * sum;
 	}
 
-	template<typename T,
+	template<typename PrecisionType,
+				typename T,
 				template<typename, typename = std::allocator<corneau::data_point<T>>> typename Container,
 				typename LinearFunction>
 	T calculate_theta_one(const Container<corneau::data_point<T>>& values, LinearFunction hypothesis)
 	{
-		double constant_term = 1 / (double)values.size();
+		PrecisionType constant_term = 1 / (PrecisionType)values.size();
 		
 		T sum = 0;
 		
