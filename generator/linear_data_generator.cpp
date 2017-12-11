@@ -38,8 +38,8 @@ int main(int argc, char** argv)
 	std::normal_distribution<> error_rate;
 	std::uniform_real_distribution<> x_distribution;
 	
-	std::size_t float_rep_size = precision + 3; //# after zero + '.' + '0' + '-'
-	std::size_t sizeof_line = float_rep_size * 2 + sizeof(char) * 2; //Two float numbers + one delimiter + one \n
+	std::size_t double_rep_size = precision + 3; //# after zero + '.' + '0' + '-'
+	std::size_t sizeof_line = double_rep_size * 2 + sizeof(char) * 2; //Two double numbers + one delimiter + one \n
 	
 	{ //New scope so the file is closed at the end
 		std::ofstream ostrm(filename);
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		ostrm << ("X,Y\n"); //header line
 		ostrm << std::fixed << std::setprecision(precision);
 		
-		//Buffer storing float representation and one '\0' character
+		//Buffer storing double representation and one '\0' character
 		char* buffer = new char[(number_of_value * sizeof_line)];
 		
 		//Initialize everything to zero
@@ -56,8 +56,8 @@ int main(int argc, char** argv)
 			for(std::size_t j = 0; j < sizeof_line; ++j)
 				buffer[i * sizeof_line + j] = '0';
 			
-			buffer[i * sizeof_line + float_rep_size] = ',';
-			buffer[i * sizeof_line + float_rep_size * 2 + sizeof(char)] = '\n';	
+			buffer[i * sizeof_line + double_rep_size] = ',';
+			buffer[i * sizeof_line + double_rep_size * 2 + sizeof(char)] = '\n';	
 		}
 		
 		//Loop over how much values with want
@@ -67,17 +67,17 @@ int main(int argc, char** argv)
 			std::size_t line_offset = sizeof_line * i;
 			
 			//The actual numbers we want to output to the file
-			float x = x_distribution(eng);
-			float y = y_intercept + slope * x + error_rate(eng);
+			double x = x_distribution(eng);
+			double y = y_intercept + slope * x + error_rate(eng);
 			
 			//Res is the number of character written. The character at buffer[res] is '\0', so we need
 			//To get rid of it
-			int res = snprintf((buffer + line_offset), float_rep_size, "%f", x);
+			int res = snprintf((buffer + line_offset), double_rep_size, "%f", x);
 			buffer[line_offset + res] = '0';
 			
-			//Since we written float_rep_size character, we put the delimiter at float_rep_size index
-			res = snprintf((buffer + line_offset + float_rep_size + sizeof(char)), float_rep_size, "%f", y);
-			buffer[line_offset + float_rep_size + sizeof(char) + res] = '0';
+			//Since we written double_rep_size character, we put the delimiter at double_rep_size index
+			res = snprintf((buffer + line_offset + double_rep_size + sizeof(char)), double_rep_size, "%f", y);
+			buffer[line_offset + double_rep_size + sizeof(char) + res] = '0';
 		}
 		
 		ostrm.write(buffer, number_of_value * sizeof_line);
