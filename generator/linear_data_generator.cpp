@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	double y_intercept = 0.0;
 	std::size_t precision = 8;
 	
-	std::string delimiter(",");
+	char delimiter = ',';
 	
 	if(argc > 1)
 		number_of_value = atof(argv[1]);
@@ -26,9 +26,7 @@ int main(int argc, char** argv)
 	if(argc > 3)
 		y_intercept = atof(argv[3]);
 	if(argc > 4)
-		delimiter = std::string(argv[4]);
-	if(argc > 5)
-		precision = atoi(argv[5]);
+		precision = atoi(argv[4]);
 	
 	std::string filename = "linear_model_data.csv";
 	
@@ -42,26 +40,51 @@ int main(int argc, char** argv)
 	std::normal_distribution<> error_rate;
 	std::uniform_real_distribution<> x_distribution;
 	
+	std::size_t float_rep_size = precision + 3; //# after zero + '.' + '0' + '-'
+	std::size_t sizeof_line = float_rep_size * 2 + sizeof(char) * 2; //Two float numbers + one delimiter + one \n
+	
 	{ //New scope so the file is closed at the end
 		std::ofstream ostrm(filename);
 		
-		ostrm << ("X" + delimiter + "Y\n"); //header line
+		ostrm << ("X,Y\n"); //header line
 		ostrm << std::fixed << std::setprecision(precision);
 		
+		//Buffer storing float representation and one '\0' character
+		char* buffer = new char[(number_of_value * sizeof_line) + 1];
+		
+		//Initialize everything to zero
+		for(std::size_t i = 0; i < number_of_value * sizeof_line; ++i)
+			buffer[i] = '0';
+		
+		//Put a '\0' at the last location
+		buffer[number_of_value * sizeof_line + 1] = '\0';
+		
+		//Loop over how much values with want
 		for(std::size_t i = 0; i < number_of_value; ++i)
 		{
-			double x = x_distribution(eng);
-			auto buf = std::to_string(x);
+			//Calculates the offset where the current line begins (0, sizeof_line * 1, sizeof_line * 2, etc.)
+			std::size_t line_offset = sizeof_line * i;
 			
-			ostrm.write(buf.data(), buf.size());
-			ostrm.write(delimiter.data(), delimiter.size());
+			//The actual numbers we want to output to the file
+			float x = x_distribution(eng);
+			float y = y_intercept + slope * x + error_rate(eng);
 			
-			double y = y_intercept + slope * x + error_rate(eng);
-			buf = std::to_string(y);
+			//Res is the number of character written. The character at buffer[res] is '\0', so we need
+			//To get rid of it
+			int res = snprintf((buffer + line_offset), float_rep_size, "%f", x);
+			buffer[line_offset + res] = '0';
 			
-			ostrm.write(buf.data(), buf.size());			
-			ostrm << '\n';
+			//Since we written float_rep_size character, we put the delimiter at float_rep_size index
+			buffer[line_offset + float_rep_size] = ',';
+			
+			res = snprintf((buffer + line_offset + float_rep_size + sizeof(char)), float_rep_size, "%f", y);
+			
+			buffer[line_offset + float_rep_size + sizeof(char) + res] = '0';
+			
+			buffer[line_offset + float_rep_size * 2 + sizeof(char)] = '\n';	
 		}
+		
+		ostrm.write(buffer, number_of_value * sizeof_line);
 	}
 	
 	auto end = std::chrono::high_resolution_clock::now();
