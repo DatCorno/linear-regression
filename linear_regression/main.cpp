@@ -2,11 +2,10 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
-#include <random>
+#include <random>	
 #include "linear_regression.hpp"
 
 using std::cout;
-using namespace corneau;
 
 int main(int argc, char** argv)
 {
@@ -33,7 +32,7 @@ int main(int argc, char** argv)
 	if(argc > 3)
 		delimiter = std::string(argv[3]);
 	
-	std::vector<data_point<float>> data_points;
+	std::vector<corneau::data_point<double>> data_points;
 	std::string line, token;
 	size_t pos = 0;
 
@@ -45,7 +44,7 @@ int main(int argc, char** argv)
 			while ((pos = line.find(delimiter)) != std::string::npos) 
 			{
 				//Part before the delimiter is the x value
-				data_point<float> point;
+				corneau::data_point<double> point;
 				token = line.substr(0, pos);
 				point.x = stof(token);
 				
@@ -72,13 +71,12 @@ int main(int argc, char** argv)
 	std::uniform_int_distribution<> index_dis(0, data_points.size() - 1);
 	
 	//Generate random starting value for the y_intercept and the slope
-	float random_y_intercept = data_points[index_dis(eng)].y;
-	float random_slope = dis(eng);
+	double random_y_intercept = data_points[index_dis(eng)].y;
+	double random_slope = dis(eng);
 		
+	corneau::linear_regression<double, double, double> linear_reg(learning_rate, random_y_intercept, random_slope);
 	
-	linear_regression<float, float, double> linear_reg(learning_rate, random_y_intercept, random_slope);
-	
-	const hypothesis<float>& final_hyp = linear_reg(data_points);
+	const corneau::hypothesis<double>& final_hyp = linear_reg(data_points);
 	
 	cout << "random x : " << random_slope << "; random y " << random_y_intercept << '\n';
 	cout << "y-intercept : " << final_hyp.y_intercept << "\nslope : " << final_hyp.slope << '\n';
