@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "configuration.hpp"
+#include "pcg_random.hpp"
 
 namespace corneau {
 	class generator {
@@ -20,7 +21,9 @@ namespace corneau {
 			configuration config;
 			
 			std::random_device rd;
-			std::mt19937 eng;
+			
+			pcg_extras::seed_seq_from<std::random_device> seed_source;
+			pcg32 eng;
 			
 			double next_uniform_real();
 			double next_normal_real();

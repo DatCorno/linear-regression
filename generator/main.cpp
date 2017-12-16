@@ -13,6 +13,7 @@
 
 int main(int argc, char** argv)
 {	
+	//Construct the argument for the generator. All values are optional
 	cxxopts::Options options(argv[0], "data generator");
 	options.add_options()
 	("n,number_of_value", "number of value to generate", 
@@ -28,9 +29,8 @@ int main(int argc, char** argv)
 	;
 	
 	auto result = options.parse(argc, argv);
-
-	auto start = std::chrono::high_resolution_clock::now();
 	
+	//A reference to the result object raises error so 
 	corneau::generator data_generator(std::move(corneau::configuration(result["number_of_value"].as<std::size_t>(),
 																		result["precision"].as<std::size_t>(),
 																		result["slope"].as<double>(),
@@ -39,15 +39,17 @@ int main(int argc, char** argv)
 	
 	const corneau::configuration& current_configuration = data_generator.current_configuration();
 	
+	auto start = std::chrono::high_resolution_clock::now();
+
 	{ //New scope so the file is closed at the end
-		std::ofstream ostrm(current_configuration.filename);
-		
-		ostrm << current_configuration.header_line; //header line
-		ostrm << std::fixed << std::setprecision(current_configuration.precision);
+		std::ofstream file_stream(current_configuration.filename);
+
+		file_stream << current_configuration.header_line; //header line
+		file_stream << std::fixed << std::setprecision(current_configuration.precision);
 		
 		char* buffer = data_generator.generate_data();
 		
-		ostrm.write(buffer, current_configuration.number_of_value * current_configuration.sizeof_line());
+		file_stream.write(buffer, current_configuration.number_of_value * current_configuration.sizeof_line());
 		
 		delete[] buffer;
 	}

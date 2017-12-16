@@ -2,7 +2,7 @@
 
 namespace corneau {
 	
-	generator::generator(configuration&& _config) : config(std::move(_config)), eng(rd())
+	generator::generator(configuration&& _config) : config(std::move(_config)), eng(seed_source)
 	{			
 		//If random_device has no entropy it cannot seed the engine properly, we use time(0) as a fallback
 		if(!rd.entropy()) 
@@ -39,11 +39,11 @@ namespace corneau {
 			
 			//Res is the number of character written. The character at buffer[res] is '\0', so we need
 			//To get rid of it
-			int res = snprintf((buffer + line_offset), config.data_point_character_size(), "%f", x);
+			int res = sprintf((buffer + line_offset), "%f", x);
 			buffer[line_offset + res] = '0';
 			
 			//Since we written double_rep_size character, we put the delimiter at double_rep_size index
-			res = snprintf((buffer + line_offset + config.data_point_character_size() + sizeof(char)), config.data_point_character_size(), "%f", y);
+			res = sprintf((buffer + line_offset + config.data_point_character_size() + sizeof(char)), "%f", y);
 			buffer[line_offset + config.data_point_character_size() + sizeof(char) + res] = '0';
 		}
 		

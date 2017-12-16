@@ -4,7 +4,6 @@
 #include <utility>
 #include <stdlib.h>
 #include <string>
-#include "cxxopts.hpp"
 
 namespace corneau {
 	struct configuration {
