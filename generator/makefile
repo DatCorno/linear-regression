@@ -16,7 +16,7 @@ generator.o :
 configuration.o :
 	$(CXX) $(CXXFLAGS) -c configuration.cpp
 	
-main.o :
+main.o : generator.o configuration.o
 	$(CXX) $(CXXFLAGS) -c main.cpp
 	
 $(EXEC) : $(OBJS)

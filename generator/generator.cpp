@@ -1,5 +1,9 @@
 #include "generator.hpp"
 
+#define STB_SPRINTF_IMPLEMENTATION
+#include "stb_sprintf.h"
+
+
 namespace corneau {
 	
 	generator::generator(configuration&& _config) : config(std::move(_config)), eng(seed_source)
@@ -26,7 +30,7 @@ namespace corneau {
 			buffer[i * config.sizeof_line() + config.data_point_character_size() * 2 + sizeof(char)] = '\n';	
 		}
 		
-		//Loop over how much values with want
+		//Loop over how much values we want
 		for(std::size_t i = 0; i < config.number_of_value; ++i)
 		{
 			//Calculates the offset where the current line begins (0, sizeof_line * 1, sizeof_line * 2, etc.)
@@ -38,11 +42,11 @@ namespace corneau {
 			
 			//Res is the number of character written. The character at buffer[res] is '\0', so we need
 			//To get rid of it
-			int res = sprintf((buffer + line_offset), "%f", x);
+			int res = stbsp_snprintf((buffer + line_offset), config.precision, "%f", x);
 			buffer[line_offset + res] = '0';
 			
 			//Since we written double_rep_size character, we put the delimiter at double_rep_size index
-			res = sprintf((buffer + line_offset + config.data_point_character_size() + sizeof(char)), "%f", y);
+			res = stbsp_snprintf((buffer + line_offset + config.data_point_character_size() + sizeof(char)), config.precision, "%f", y);
 			buffer[line_offset + config.data_point_character_size() + sizeof(char) + res] = '0';
 		}
 		
