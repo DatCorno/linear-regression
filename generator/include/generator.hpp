@@ -5,6 +5,7 @@
 #include <chrono>
 #include <random>
 #include <cstring>
+#include <fstream>
 
 #include "configuration.hpp"
 #include "pcg_random.hpp"
@@ -15,9 +16,11 @@ namespace corneau {
 			generator(configuration&&);
 			
 			const configuration& current_configuration() const;
-			
-			char* generate_data();
+						
+			void generate_data(std::ostream&);
 		private :
+			char* generate_line();
+		
 			configuration config;
 			
 			std::random_device rd;

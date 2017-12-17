@@ -18,38 +18,39 @@ namespace corneau {
 		return config;
 	}
 	
-	char* generator::generate_data()
+	void generator::generate_data(std::ostream& out)
 	{
-		char* buffer = new char[config.number_of_value * config.sizeof_line()];
-		
-		std::memset(buffer, '0', config.number_of_value * config.sizeof_line());
-		
+		char* buffer = nullptr;
 		for(std::size_t i = 0; i < config.number_of_value; ++i)
 		{
-			buffer[i * config.sizeof_line() + config.data_point_character_size()] = ',';
-			buffer[i * config.sizeof_line() + config.data_point_character_size() * 2 + sizeof(char)] = '\n';	
+			buffer = generate_line();
+			out.write(buffer, config.sizeof_line());
+			delete[] buffer;
 		}
+	}
+	
+	char* generator::generate_line()
+	{
+		char* buffer = new char[config.sizeof_line()];
 		
-		//Loop over how much values we want
-		for(std::size_t i = 0; i < config.number_of_value; ++i)
-		{
-			//Calculates the offset where the current line begins (0, sizeof_line * 1, sizeof_line * 2, etc.)
-			std::size_t line_offset = config.sizeof_line() * i;
-			
-			//The actual numbers we want to output to the file
-			double x = next_uniform_real();
-			double y = config.y_intercept + config.slope * x + next_normal_real();
-			
-			//Res is the number of character written. The character at buffer[res] is '\0', so we need
-			//To get rid of it
-			int res = stbsp_snprintf((buffer + line_offset), config.precision, "%f", x);
-			buffer[line_offset + res] = '0';
-			
-			//Since we written double_rep_size character, we put the delimiter at double_rep_size index
-			res = stbsp_snprintf((buffer + line_offset + config.data_point_character_size() + sizeof(char)), config.precision, "%f", y);
-			buffer[line_offset + config.data_point_character_size() + sizeof(char) + res] = '0';
-		}
+		std::memset(buffer, '0', config.sizeof_line());
+
+		buffer[config.data_point_character_size()] = ',';
+		buffer[config.data_point_character_size() * 2 + sizeof(char)] = '\n';		
 		
+		//The actual numbers we want to output to the file
+		double x = next_uniform_real();
+		double y = config.y_intercept + config.slope * x + next_normal_real();
+		
+		//Res is the number of character written. The character at buffer[res] is '\0', so we need
+		//To get rid of it
+		int res = stbsp_snprintf((buffer), config.precision, "%f", x);
+		buffer[res] = '0';
+		
+		//Since we written double_rep_size character, we put the delimiter at double_rep_size index
+		res = stbsp_snprintf((buffer + config.data_point_character_size() + sizeof(char)), config.precision, "%f", y);
+		buffer[config.data_point_character_size() + sizeof(char) + res] = '0';
+	
 		return buffer;
 	}
 	

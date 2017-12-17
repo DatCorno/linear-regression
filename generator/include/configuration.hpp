@@ -33,6 +33,6 @@ namespace corneau {
 		{
 			return data_point_character_size() * 2 + sizeof(char) * 2;
 		}
-		};
+	};
 }
 #endif

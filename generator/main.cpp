@@ -47,13 +47,9 @@ int main(int argc, char** argv)
 		file_stream << current_configuration.header_line; //header line
 		file_stream << std::fixed << std::setprecision(current_configuration.precision);
 		
-		char* buffer = data_generator.generate_data();
-		
-		file_stream.write(buffer, current_configuration.number_of_value * current_configuration.sizeof_line());
-		
-		delete[] buffer;
+		data_generator.generate_data(file_stream);
 	}
-
+	
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> diff = end - start;
 
