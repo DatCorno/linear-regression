@@ -1,4 +1,9 @@
 /generator/linear_model_data.csv
 *.exe
 *.vsp
+*.csv
+*.o
 cxxopts.hpp
+pcg*
+LICENSE.TXT
+*.a

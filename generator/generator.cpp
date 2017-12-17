@@ -6,8 +6,7 @@ namespace corneau {
 	{			
 		//If random_device has no entropy it cannot seed the engine properly, we use time(0) as a fallback
 		if(!rd.entropy()) 
-			eng.seed(time(0));
-		
+			eng.seed(time(0));	
 	}
 	
 	const configuration& generator::current_configuration() const
